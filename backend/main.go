@@ -25,7 +25,7 @@ func main() {
 	db.ConnectDB()
 
 	// Routes
-	r.Route("chautari/api/v1", func(r chi.Router) {
+	r.Route("/chautari/api/v1", func(r chi.Router) {
 
 		r.Post("/register", handlers.UserRegistrationHandler)
 
