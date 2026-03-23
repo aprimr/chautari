@@ -2,9 +2,9 @@ package db
 
 import (
 	"context"
-	"log"
 	"os"
 
+	"github.com/aprimr/chautari/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -19,14 +19,14 @@ func ConnectDB() {
 	// Create connection
 	Pool, err = pgxpool.New(context.Background(), databaseUrl)
 	if err != nil {
-		log.Fatalln("Error connecting to DB", err)
+		utils.LogFatal("Error connecting to DB", err)
 	}
 
 	// Ping database
 	err = Pool.Ping(context.Background())
 	if err != nil {
-		log.Fatalln("Cannot ping DB", err)
+		utils.LogFatal("Cannot ping DB", err)
 	}
 
-	log.Println("Connected to DB")
+	utils.LogInfo("Connected to DB")
 }
