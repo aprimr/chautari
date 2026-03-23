@@ -16,21 +16,21 @@ var (
 // Must contain a number
 // Must contain a special character
 // Must not contain any spaces
-func IsValidPassword(password string) bool {
+func IsValidPassword(password string) (string, bool) {
 	if len(password) < 8 {
-		return false
+		return "Password must be atleast 8 characters long", false
 	}
 	if hasSpace.MatchString(password) {
-		return false
+		return "Password cannot contain any spaces", false
 	}
 	if !hasLetter.MatchString(password) {
-		return false
+		return "Password must contain a letter", false
 	}
 	if !hasNumber.MatchString(password) {
-		return false
+		return "Password must contain a number", false
 	}
 	if !hasSpecial.MatchString(password) {
-		return false
+		return "Password must contain a special character", false
 	}
-	return true
+	return "", true
 }
