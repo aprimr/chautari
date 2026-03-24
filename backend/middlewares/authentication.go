@@ -13,13 +13,17 @@ func Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// Get auth header and trim prefix
-		authHeader := r.Header.Get("Authentication")
+		authHeader := r.Header.Get("Authorization")
 		if validation.IsEmptyString(authHeader) {
-			utils.SendError(w, "JWT token missing", http.StatusUnauthorized)
+			utils.SendError(w, "Auth header missing", http.StatusUnauthorized)
 			return
 		}
 
 		jwtToken := strings.TrimPrefix(authHeader, "Bearer ")
+		if validation.IsEmptyString(jwtToken) {
+			utils.SendError(w, "Jwt token missing", http.StatusUnauthorized)
+			return
+		}
 
 		// Verify JWT
 		jwtClaims, err := utils.VerifyToken(jwtToken)
