@@ -6,6 +6,7 @@ import (
 
 	"github.com/aprimr/chautari/db"
 	"github.com/aprimr/chautari/handlers"
+	"github.com/aprimr/chautari/middlewares"
 	"github.com/aprimr/chautari/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -30,6 +31,13 @@ func main() {
 		// Public Routes
 		r.Post("/login", handlers.UserLoginHandler)
 		r.Post("/register", handlers.UserRegistrationHandler)
+
+		// Protected Routes (user)
+		r.Group(func(r chi.Router) {
+			r.Use(middlewares.Authentication)
+
+			r.Get("/me", handlers.GetMeHandler)
+		})
 
 	})
 

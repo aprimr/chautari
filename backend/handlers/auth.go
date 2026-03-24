@@ -47,7 +47,7 @@ func UserRegistrationHandler(w http.ResponseWriter, r *http.Request) {
 			utils.SendError(w, "Error generating unique username", http.StatusConflict)
 			return
 		}
-		utils.LogError("RegisterUser", err)
+		utils.LogError("Register Service", err)
 		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
@@ -93,5 +93,5 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccess(w, "User logged in successfully", "Bearer"+jwtToken, http.StatusOK)
+	utils.SendSuccess(w, "User logged in successfully", jwtToken, http.StatusOK)
 }
