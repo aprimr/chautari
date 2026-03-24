@@ -93,5 +93,5 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccess(w, "User logged in successfully", jwtToken, http.StatusOK)
+	utils.SendSuccess(w, "User logged in successfully", "Bearer"+jwtToken, http.StatusOK)
 }

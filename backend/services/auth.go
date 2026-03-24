@@ -55,36 +55,36 @@ func RegisterUser(ctx context.Context, registerInput models.RegisterInput) error
 	return nil
 }
 
-func LoginUser(ctx context.Context, loginInput models.LoginInput) (*string, error) {
+func LoginUser(ctx context.Context, loginInput models.LoginInput) (string, error) {
 	// Check if user exists
 	exists, err := repository.UserExists(ctx, loginInput.Email)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if !exists {
-		return nil, fmt.Errorf("user not found")
+		return "", fmt.Errorf("user not found")
 	}
 
 	// Get user from DB
 	user, err := repository.GetUserByEmail(ctx, loginInput.Email)
 	if err != nil {
 		if err.Error() == "user not found" {
-			return nil, fmt.Errorf("user not found")
+			return "", fmt.Errorf("user not found")
 		}
-		return nil, err
+		return "", err
 	}
 
 	// Match password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginInput.Password))
 	if err != nil {
-		return nil, fmt.Errorf("incorrect password")
+		return "", fmt.Errorf("incorrect password")
 	}
 
 	// Generate JWT token
 	jwtToken, err := utils.CreateToken(user.Uid, user.Username, user.Email)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return &jwtToken, nil
+	return jwtToken, nil
 }

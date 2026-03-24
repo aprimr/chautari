@@ -68,3 +68,46 @@ Password Validation
 | `500`  | Something went wrong                      |
 
 ---
+
+### POST `/login`
+
+**Request:**
+
+```json
+{
+  "email": "john@example.com",
+  "password": "Password123!"
+}
+```
+
+```
+Password Validation
+- Minimum 8 characters
+- At least one letter
+- At least one number
+- At least one special character
+
+```
+
+**Response `200 OK`:**
+
+```json
+{
+  "success": true,
+  "message": "User logged in successfully",
+  "data": "jwt_token"
+}
+```
+
+**Error Responses:**
+
+| Status | Message                                   |
+| ------ | ----------------------------------------- |
+| `400`  | Invalid JSON                              |
+| `400`  | Invalid email                             |
+| `400`  | Password must be at least 8 characters... |
+| `404`  | User not found                            |
+| `401`  | Incorrect password username               |
+| `500`  | Something went wrong                      |
+
+---
