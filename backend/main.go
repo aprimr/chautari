@@ -27,6 +27,8 @@ func main() {
 	// Routes
 	r.Route("/chautari/api/v1", func(r chi.Router) {
 
+		// Public Routes
+		r.Post("/login", handlers.UserLoginHandler)
 		r.Post("/register", handlers.UserRegistrationHandler)
 
 	})

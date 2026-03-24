@@ -54,3 +54,44 @@ func UserRegistrationHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendSuccess(w, "User registered successfully", nil, http.StatusCreated)
 }
+
+func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse JSON and store in registerInput
+	loginInput := models.LoginInput{}
+	err := json.NewDecoder(r.Body).Decode(&loginInput)
+	if err != nil {
+		utils.LogError("Invalid JSON", err)
+		utils.SendError(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Validate user data
+	if !validation.IsValidEmail(loginInput.Email) {
+		utils.SendError(w, "Invalid email", http.StatusBadRequest)
+		return
+	}
+	if msg, isValid := validation.IsValidPassword(loginInput.Password); !isValid {
+		utils.SendError(w, msg, http.StatusBadRequest)
+		return
+	}
+
+	// Call LoginUser service
+	jwtToken, err := services.LoginUser(r.Context(), loginInput)
+	if err != nil {
+		if err.Error() == "user not found" {
+			utils.LogError("User not found", err)
+			utils.SendError(w, "User not found", http.StatusNotFound)
+			return
+		}
+		if err.Error() == "incorrect password" {
+			utils.LogError("Incorrect password", err)
+			utils.SendError(w, "Incorrect password", http.StatusUnauthorized)
+			return
+		}
+		utils.LogError("Login Service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "User logged in successfully", jwtToken, http.StatusOK)
+}
