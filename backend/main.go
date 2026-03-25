@@ -29,6 +29,8 @@ func main() {
 	r.Route("/chautari/api/v1", func(r chi.Router) {
 
 		// Public Routes
+
+		// Auth
 		r.Post("/login", handlers.UserLoginHandler)
 		r.Post("/register", handlers.UserRegistrationHandler)
 
@@ -37,6 +39,9 @@ func main() {
 			r.Use(middlewares.Authentication)
 
 			r.Get("/me", handlers.GetMeHandler)
+
+			// Contact
+			r.Post("/contact", handlers.SendContactRequestHandler)
 		})
 
 	})
