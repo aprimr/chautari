@@ -50,6 +50,7 @@ func main() {
 				r.Post("/accept/{rid}", handlers.AcceptRequestHandler)     // accept request
 				r.Post("/reject/{rid}", handlers.RejectRequestHandler)     // reject request
 				r.Get("/incoming", handlers.GetIncomingRequestsHandler)    // get requests received
+				r.Get("/outgoing", handlers.GetOutgoingRequestsHandler)    // get requests sent
 			})
 		})
 

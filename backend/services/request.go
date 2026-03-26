@@ -46,3 +46,8 @@ func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, err
 	requests, err := repository.GetIncomingRequests(ctx, uid)
 	return requests, err
 }
+
+func GetOutgoingRequests(ctx context.Context, uid string) ([]models.Request, error) {
+	requests, err := repository.GetOutgoingRequests(ctx, uid)
+	return requests, err
+}

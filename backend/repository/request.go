@@ -74,7 +74,7 @@ func RejectRequest(ctx context.Context, requestId, receiverId string) error {
 	return nil
 }
 
-// GetIncomingRequests - return all incommitg requests
+// GetIncomingRequests - return all incoming requests
 func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, error) {
 	query := "SELECT rid, sender_id, receiver_id, status, created_at, updated_at FROM requests WHERE receiver_id=$1 AND status='pending' ORDER BY created_at DESC"
 
@@ -104,4 +104,36 @@ func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, err
 		incomingRequests = append(incomingRequests, request)
 	}
 	return incomingRequests, nil
+}
+
+// GetOutgoingRequests - return all outgoing requests
+func GetOutgoingRequests(ctx context.Context, uid string) ([]models.Request, error) {
+	query := "SELECT rid, sender_id, receiver_id, status, created_at, updated_at FROM requests WHERE sender_id=$1 AND status='pending' ORDER BY created_at DESC"
+
+	// fire query and scan rows
+	var outgingRequests = []models.Request{}
+	rows, err := db.Pool.Query(ctx, query, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		request := models.Request{}
+		err = rows.Scan(
+			&request.Rid,
+			&request.SenderId,
+			&request.ReceiverId,
+			&request.Status,
+			&request.CreatedAt,
+			&request.UpdatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		outgingRequests = append(outgingRequests, request)
+	}
+	return outgingRequests, nil
 }
