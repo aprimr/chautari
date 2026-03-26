@@ -20,6 +20,17 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
+type UserInfo struct {
+	Uid        string    `json:"uid"`
+	Name       string    `json:"name"`
+	Username   string    `json:"username"`
+	Email      string    `json:"email"`
+	Bio        string    `json:"bio"`
+	ProfileUrl string    `json:"profile_url"`
+	IsOnline   bool      `json:"is_online"`
+	LastSeen   time.Time `json:"last_seen"`
+}
+
 type RegisterInput struct {
 	Name       string `json:"name"`
 	Email      string `json:"email"`

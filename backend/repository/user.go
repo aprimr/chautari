@@ -129,3 +129,35 @@ func UpdateLastSeen(ctx context.Context, uid string) error {
 	_, err := db.Pool.Exec(ctx, query, time.Now(), uid)
 	return err
 }
+
+func SearchUser(ctx context.Context, searchText string, uid string) ([]models.UserInfo, error) {
+	query := "SELECT uid, name, username, email, bio, profile_url, is_online, last_seen FROM users WHERE (name ILIKE $1 || '%' OR username ILIKE $1 || '%') AND uid != $2 AND is_active=TRUE AND is_deleted=FALSE LIMIT 20"
+
+	// Fire query and scan rows
+	users := []models.UserInfo{}
+	rows, err := db.Pool.Query(ctx, query, searchText, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		user := models.UserInfo{}
+		err := rows.Scan(
+			&user.Uid,
+			&user.Name,
+			&user.Username,
+			&user.Email,
+			&user.Bio,
+			&user.ProfileUrl,
+			&user.IsOnline,
+			&user.LastSeen,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

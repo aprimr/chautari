@@ -41,3 +41,12 @@ func GetMe(ctx context.Context, uid string) (*models.User, error) {
 
 	return user, err
 }
+
+func SearchUser(ctx context.Context, searchText string, uid string) ([]models.UserInfo, error) {
+	users, err := repository.SearchUser(ctx, searchText, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

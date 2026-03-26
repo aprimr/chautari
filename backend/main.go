@@ -40,6 +40,9 @@ func main() {
 
 			r.Get("/me", handlers.GetMeHandler)
 
+			// Search
+			r.Get("/search", handlers.SearchUserHandler)
+
 			// Contact
 			r.Post("/contact", handlers.SendContactRequestHandler)
 		})
