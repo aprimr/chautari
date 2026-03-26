@@ -45,8 +45,8 @@ func main() {
 
 			// Contact routes
 			r.Route("/requests", func(r chi.Router) {
-				r.Post("/send/{reciever_id}", handlers.SendContactRequestHandler) // send request to contact_id
-				// r.Post("/accept/{id}", handlers.AcceptContactRequestHandler) // accept request
+				r.Post("/send/{reciever_id}", handlers.SendRequestHandler) // send request to contact_id
+				r.Post("/accept/{rid}", handlers.AcceptRequestHandler)     // accept request
 			})
 		})
 

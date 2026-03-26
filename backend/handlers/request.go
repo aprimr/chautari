@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
+func SendRequestHandler(w http.ResponseWriter, r *http.Request) {
 	// get uid from r.context
 	uid, ok := r.Context().Value("uid").(string)
 	if !ok || uid == "" {
@@ -29,7 +29,7 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call Add Contact service
-	err := services.SendContactRequest(r.Context(), uid, receiverId)
+	err := services.SendRequest(r.Context(), uid, receiverId)
 	if err != nil {
 		if err.Error() == "request exists" {
 			utils.SendError(w, "Request already sent", http.StatusConflict)
@@ -40,5 +40,34 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccess(w, "R			equest sent", nil, http.StatusCreated)
+	utils.SendSuccess(w, "Request sent", nil, http.StatusCreated)
+}
+
+func AcceptRequestHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// get id from url params (request id)
+	requestId := chi.URLParam(r, "rid")
+	if validation.IsEmptyString(requestId) {
+		utils.SendError(w, "Empty request id", http.StatusBadRequest)
+		return
+	}
+
+	utils.LogDebug("Rid handler: " + requestId)
+
+	// Call service
+	err := services.AcceptRequest(r.Context(), requestId, uid)
+	if err != nil {
+		utils.LogError("AcceptRequest service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "You are now friends", nil, http.StatusOK)
 }

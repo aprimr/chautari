@@ -2,8 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/aprimr/chautari/db"
+	"github.com/aprimr/chautari/utils"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -21,9 +24,24 @@ func RequestExists(ctx context.Context, senderId, receiverId string) (bool, erro
 	return true, nil
 }
 
-// CreateContactRequest - send new request
-func CreateContactRequest(ctx context.Context, senderId, receiverId string) error {
+// SendRequest - send new request
+func SendRequest(ctx context.Context, senderId, receiverId string) error {
 	query := "INSERT INTO requests (sender_id, receiver_id, status) VALUES($1, $2, 'pending')"
 	_, err := db.Pool.Exec(ctx, query, senderId, receiverId)
 	return err
+}
+
+// AcceptRequest - accept pending request
+func AcceptRequest(ctx context.Context, requestId, currentUserId string) error {
+	utils.LogDebug("Rid repo: " + requestId)
+
+	query := "UPDATE requests SET status = 'accepted', updated_at = $1 WHERE rid = $2 AND receiver_id = $3 AND status = 'pending'"
+	cmdTag, err := db.Pool.Exec(ctx, query, time.Now(), requestId, currentUserId)
+	if err != nil {
+		return err
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("request not found or already processed")
+	}
+	return nil
 }
