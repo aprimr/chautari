@@ -1,0 +1,9 @@
+POST /login
+POST /register
+
+PROTECTED
+GET /me
+GET /search?q=nameORusername
+
+(/contacts)
+POST /send/{contact_id}

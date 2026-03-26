@@ -6,6 +6,7 @@ import (
 	"github.com/aprimr/chautari/services"
 	"github.com/aprimr/chautari/utils"
 	"github.com/aprimr/chautari/validation"
+	"github.com/go-chi/chi/v5"
 )
 
 func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
@@ -16,8 +17,8 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get contact_id query from url
-	contactId := r.URL.Query().Get("contact_id")
+	// get contact_id param from url
+	contactId := chi.URLParam(r, "contact_id")
 	if validation.IsEmptyString(contactId) {
 		utils.SendError(w, "empty contact_id", http.StatusBadRequest)
 		return

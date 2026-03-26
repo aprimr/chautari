@@ -40,11 +40,13 @@ func main() {
 
 			r.Get("/me", handlers.GetMeHandler)
 
-			// Search
+			// Search User
 			r.Get("/search", handlers.SearchUserHandler)
 
-			// Contact
-			r.Post("/contact", handlers.SendContactRequestHandler)
+			// Contact routes
+			r.Route("/contacts", func(r chi.Router) {
+				r.Post("/send/{contact_id}", handlers.SendContactRequestHandler) // send request to contact_id
+			})
 		})
 
 	})
