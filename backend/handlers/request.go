@@ -126,3 +126,22 @@ func RejectRequestHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendSuccess(w, "Request rejected", nil, http.StatusOK)
 }
+
+func GetIncomingRequestsHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Call service
+	requests, err := services.GetIncomingRequests(r.Context(), uid)
+	if err != nil {
+		utils.LogError("GetIncomingRequests service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Incoming requests fetched", requests, http.StatusOK)
+}

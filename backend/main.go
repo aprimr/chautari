@@ -46,9 +46,10 @@ func main() {
 			// Contact routes
 			r.Route("/requests", func(r chi.Router) {
 				r.Post("/send/{receiver_id}", handlers.SendRequestHandler) // send request to contact_id
-				r.Delete("/cancel/{rid}", handlers.CancelRequestHandler)   //Cancle request
+				r.Delete("/cancel/{rid}", handlers.CancelRequestHandler)   // cancel request
 				r.Post("/accept/{rid}", handlers.AcceptRequestHandler)     // accept request
 				r.Post("/reject/{rid}", handlers.RejectRequestHandler)     // reject request
+				r.Get("/incoming", handlers.GetIncomingRequestsHandler)    // get requests received
 			})
 		})
 

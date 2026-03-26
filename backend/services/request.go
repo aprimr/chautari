@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aprimr/chautari/models"
 	"github.com/aprimr/chautari/repository"
 )
 
@@ -36,8 +37,12 @@ func CancelRequest(ctx context.Context, requestId, senderId string) error {
 	return err
 }
 
-
 func RejectRequest(ctx context.Context, requestId, receiverId string) error {
 	err := repository.RejectRequest(ctx, requestId, receiverId)
 	return err
+}
+
+func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, error) {
+	requests, err := repository.GetIncomingRequests(ctx, uid)
+	return requests, err
 }
