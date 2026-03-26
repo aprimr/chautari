@@ -35,3 +35,9 @@ func CancelRequest(ctx context.Context, requestId, senderId string) error {
 	err := repository.CancelRequest(ctx, requestId, senderId)
 	return err
 }
+
+
+func RejectRequest(ctx context.Context, requestId, receiverId string) error {
+	err := repository.RejectRequest(ctx, requestId, receiverId)
+	return err
+}

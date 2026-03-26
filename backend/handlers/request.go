@@ -18,7 +18,7 @@ func SendRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get reciever_id param from url
-	receiverId := chi.URLParam(r, "reciever_id")
+	receiverId := chi.URLParam(r, "receiver_id")
 	if validation.IsEmptyString(receiverId) {
 		utils.SendError(w, "Empty contact id", http.StatusBadRequest)
 		return
@@ -89,8 +89,6 @@ func AcceptRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.LogDebug("Rid handler: " + requestId)
-
 	// Call service
 	err := services.AcceptRequest(r.Context(), requestId, uid)
 	if err != nil {
@@ -100,4 +98,31 @@ func AcceptRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.SendSuccess(w, "You are now friends", nil, http.StatusOK)
+}
+
+func RejectRequestHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// get id from url params (request id)
+	requestId := chi.URLParam(r, "rid")
+	if validation.IsEmptyString(requestId) {
+		utils.SendError(w, "Empty request id", http.StatusBadRequest)
+		return
+	}
+
+	// Call service
+	err := services.RejectRequest(r.Context(), requestId, uid)
+	if err != nil {
+		utils.LogError("RejectRequest service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Request rejected", nil, http.StatusOK)
 }

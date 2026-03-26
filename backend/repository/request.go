@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/aprimr/chautari/db"
-	"github.com/aprimr/chautari/utils"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -33,8 +32,6 @@ func SendRequest(ctx context.Context, senderId, receiverId string) error {
 
 // AcceptRequest - accept pending request
 func AcceptRequest(ctx context.Context, requestId, currentUserId string) error {
-	utils.LogDebug("Rid repo: " + requestId)
-
 	query := "UPDATE requests SET status = 'accepted', updated_at = $1 WHERE rid = $2 AND receiver_id = $3 AND status = 'pending'"
 	cmdTag, err := db.Pool.Exec(ctx, query, time.Now(), requestId, currentUserId)
 	if err != nil {
@@ -46,10 +43,26 @@ func AcceptRequest(ctx context.Context, requestId, currentUserId string) error {
 	return nil
 }
 
+// CancelRequest - cancel sent request
 func CancelRequest(ctx context.Context, requestId, senderId string) error {
 	query := "DELETE FROM requests WHERE rid=$1 AND sender_id=$2 AND status='pending'"
 
 	cmdTag, err := db.Pool.Exec(ctx, query, requestId, senderId)
+	if err != nil {
+		return err
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("request not found")
+	}
+
+	return nil
+}
+
+// RejectRequest - reject recieved request
+func RejectRequest(ctx context.Context, requestId, receiverId string) error {
+	query := "DELETE FROM requests WHERE rid=$1 AND receiver_id=$2 AND status='pending'"
+
+	cmdTag, err := db.Pool.Exec(ctx, query, requestId, receiverId)
 	if err != nil {
 		return err
 	}
