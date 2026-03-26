@@ -7,9 +7,9 @@ import (
 	"github.com/aprimr/chautari/repository"
 )
 
-func SendContactRequest(ctx context.Context, userId, contactId string) error {
+func SendContactRequest(ctx context.Context, senderId, receiverId string) error {
 	// Check if request exists
-	exists, err := repository.RequestExists(ctx, userId, contactId)
+	exists, err := repository.RequestExists(ctx, senderId, receiverId)
 	if err != nil {
 		return err
 	}
@@ -18,7 +18,7 @@ func SendContactRequest(ctx context.Context, userId, contactId string) error {
 	}
 
 	// Add contact
-	err = repository.CreateContactRequest(ctx, userId, contactId)
+	err = repository.CreateContactRequest(ctx, senderId, receiverId)
 	if err != nil {
 		return err
 	}

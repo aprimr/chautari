@@ -44,8 +44,9 @@ func main() {
 			r.Get("/search", handlers.SearchUserHandler)
 
 			// Contact routes
-			r.Route("/contacts", func(r chi.Router) {
-				r.Post("/send/{contact_id}", handlers.SendContactRequestHandler) // send request to contact_id
+			r.Route("/requests", func(r chi.Router) {
+				r.Post("/send/{reciever_id}", handlers.SendContactRequestHandler) // send request to contact_id
+				// r.Post("/accept/{id}", handlers.AcceptContactRequestHandler) // accept request
 			})
 		})
 

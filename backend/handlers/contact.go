@@ -17,19 +17,19 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get contact_id param from url
-	contactId := chi.URLParam(r, "contact_id")
-	if validation.IsEmptyString(contactId) {
-		utils.SendError(w, "empty contact_id", http.StatusBadRequest)
+	// get reciever_id param from url
+	receiverId := chi.URLParam(r, "reciever_id")
+	if validation.IsEmptyString(receiverId) {
+		utils.SendError(w, "Empty contact id", http.StatusBadRequest)
 		return
 	}
-	if contactId == uid {
-		utils.SendError(w, "Cannot add self to contact", http.StatusConflict)
+	if receiverId == uid {
+		utils.SendError(w, "Cannot send request", http.StatusConflict)
 		return
 	}
 
 	// Call Add Contact service
-	err := services.SendContactRequest(r.Context(), uid, contactId)
+	err := services.SendContactRequest(r.Context(), uid, receiverId)
 	if err != nil {
 		if err.Error() == "request exists" {
 			utils.SendError(w, "Request already sent", http.StatusConflict)
@@ -40,5 +40,5 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccess(w, "Contact request sent", nil, http.StatusCreated)
+	utils.SendSuccess(w, "Request sent", nil, http.StatusCreated)
 }
