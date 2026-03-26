@@ -43,6 +43,36 @@ func SendRequestHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SendSuccess(w, "Request sent", nil, http.StatusCreated)
 }
 
+func CancelRequestHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// get rid from url params
+	rid := chi.URLParam(r, "rid")
+	if validation.IsEmptyString(rid) {
+		utils.SendError(w, "Empty request id", http.StatusBadRequest)
+		return
+	}
+
+	// Call service
+	err := services.CancelRequest(r.Context(), rid, uid)
+	if err != nil {
+		if err.Error() == "request not found" {
+			utils.SendError(w, "Request not found", http.StatusNotFound)
+			return
+		}
+		utils.LogError("CancleRequest service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Request cancelled", nil, http.StatusOK)
+}
+
 func AcceptRequestHandler(w http.ResponseWriter, r *http.Request) {
 	// get uid from r.context
 	uid, ok := r.Context().Value("uid").(string)

@@ -45,3 +45,17 @@ func AcceptRequest(ctx context.Context, requestId, currentUserId string) error {
 	}
 	return nil
 }
+
+func CancelRequest(ctx context.Context, requestId, senderId string) error {
+	query := "DELETE FROM requests WHERE rid=$1 AND sender_id=$2 AND status='pending'"
+
+	cmdTag, err := db.Pool.Exec(ctx, query, requestId, senderId)
+	if err != nil {
+		return err
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("request not found")
+	}
+
+	return nil
+}

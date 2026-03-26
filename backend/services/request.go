@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/aprimr/chautari/repository"
-	"github.com/aprimr/chautari/utils"
 )
 
 func SendRequest(ctx context.Context, senderId, receiverId string) error {
@@ -28,8 +27,11 @@ func SendRequest(ctx context.Context, senderId, receiverId string) error {
 }
 
 func AcceptRequest(ctx context.Context, requestId, currentUserId string) error {
-	utils.LogDebug("Rid service: " + requestId)
-
 	err := repository.AcceptRequest(ctx, requestId, currentUserId)
+	return err
+}
+
+func CancelRequest(ctx context.Context, requestId, senderId string) error {
+	err := repository.CancelRequest(ctx, requestId, senderId)
 	return err
 }
