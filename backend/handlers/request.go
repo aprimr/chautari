@@ -40,5 +40,5 @@ func SendContactRequestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendSuccess(w, "Request sent", nil, http.StatusCreated)
+	utils.SendSuccess(w, "R			equest sent", nil, http.StatusCreated)
 }
