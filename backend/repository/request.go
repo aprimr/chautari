@@ -10,6 +10,49 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// GetFriends
+func GetFriends(ctx context.Context, uid string) ([]models.Friend, error) {
+	query := "SELECT rid, sender_id, receiver_id, status, created_at, updated_at FROM requests WHERE (sender_id=$1 OR receiver_id=$1) AND status='accepted' ORDER BY updated_at DESC"
+
+	// fire query and scan rows
+	friends := []models.Friend{}
+	rows, err := db.Pool.Query(ctx, query, uid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		request := models.Request{}
+		friend := models.Friend{}
+
+		err := rows.Scan(
+			&request.Rid,
+			&request.SenderId,
+			&request.ReceiverId,
+			&request.Status,
+			&request.CreatedAt,
+			&request.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if request.SenderId == uid {
+			friend.FriendId = request.ReceiverId
+		}
+		if request.ReceiverId == uid {
+			friend.FriendId = request.SenderId
+		}
+		friend.Rid = request.Rid
+		friend.Status = request.Status
+		friend.CreatedAt = request.CreatedAt
+		friend.UpdatedAt = request.UpdatedAt
+
+		friends = append(friends, friend)
+	}
+	return friends, nil
+}
+
 // RequestExists - check if any request exists between users (any status)
 func RequestExists(ctx context.Context, senderId, receiverId string) (bool, error) {
 	var rid string

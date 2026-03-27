@@ -8,6 +8,11 @@ import (
 	"github.com/aprimr/chautari/repository"
 )
 
+func GetFriends(ctx context.Context, uid string) ([]models.Friend, error) {
+	friends, err := repository.GetFriends(ctx, uid)
+	return friends, err
+}
+
 func SendRequest(ctx context.Context, senderId, receiverId string) error {
 	// Check if request exists
 	exists, err := repository.RequestExists(ctx, senderId, receiverId)

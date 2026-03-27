@@ -9,6 +9,24 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+func GetFriendsHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Call service
+	friends, err := services.GetFriends(r.Context(), uid)
+	if err != nil {
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Friends fetched", friends, http.StatusOK)
+}
+
 func SendRequestHandler(w http.ResponseWriter, r *http.Request) {
 	// get uid from r.context
 	uid, ok := r.Context().Value("uid").(string)

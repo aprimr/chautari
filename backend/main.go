@@ -45,6 +45,7 @@ func main() {
 
 			// Contact routes
 			r.Route("/requests", func(r chi.Router) {
+				r.Get("/friends", handlers.GetFriendsHandler)              // get all friends
 				r.Post("/send/{receiver_id}", handlers.SendRequestHandler) // send request to contact_id
 				r.Delete("/cancel/{rid}", handlers.CancelRequestHandler)   // cancel request
 				r.Post("/accept/{rid}", handlers.AcceptRequestHandler)     // accept request
