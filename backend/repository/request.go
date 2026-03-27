@@ -74,6 +74,20 @@ func RejectRequest(ctx context.Context, requestId, receiverId string) error {
 	return nil
 }
 
+// UnfriendUser
+func UnfriendUser(ctx context.Context, rid, uid string) error {
+	query := "DELETE FROM requests WHERE rid=$1 AND (sender_id=$2 OR receiver_id=$2) AND status='accepted'"
+
+	cmdTag, err := db.Pool.Exec(ctx, query, rid, uid)
+	if err != nil {
+		return err
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("user not found")
+	}
+	return nil
+}
+
 // GetIncomingRequests - return all incoming requests
 func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, error) {
 	query := "SELECT rid, sender_id, receiver_id, status, created_at, updated_at FROM requests WHERE receiver_id=$1 AND status='pending' ORDER BY created_at DESC"

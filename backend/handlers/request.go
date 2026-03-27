@@ -127,6 +127,36 @@ func RejectRequestHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SendSuccess(w, "Request rejected", nil, http.StatusOK)
 }
 
+func UnfriendHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// get rid from url params
+	rid := chi.URLParam(r, "rid")
+	if validation.IsEmptyString(rid) {
+		utils.SendError(w, "Empty rid", http.StatusBadRequest)
+		return
+	}
+
+	// Call service
+	err := services.UnfriendUser(r.Context(), rid, uid)
+	if err != nil {
+		if err.Error() == "user not found" {
+			utils.SendError(w, "User not found", http.StatusNotFound)
+			return
+		}
+		utils.LogError("UnfriendUser service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Unfriend successful", nil, http.StatusOK)
+}
+
 func GetIncomingRequestsHandler(w http.ResponseWriter, r *http.Request) {
 	// get uid from r.context
 	uid, ok := r.Context().Value("uid").(string)

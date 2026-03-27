@@ -42,6 +42,11 @@ func RejectRequest(ctx context.Context, requestId, receiverId string) error {
 	return err
 }
 
+func UnfriendUser(ctx context.Context, requestId, uid string) error {
+	err := repository.UnfriendUser(ctx, requestId, uid)
+	return err
+}
+
 func GetIncomingRequests(ctx context.Context, uid string) ([]models.Request, error) {
 	requests, err := repository.GetIncomingRequests(ctx, uid)
 	return requests, err
