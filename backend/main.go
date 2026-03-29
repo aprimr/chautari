@@ -38,6 +38,10 @@ func main() {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.Authentication)
 
+			// Auth
+			r.Put("/me/password", handlers.UpdatePasswordHandler)
+
+			// Profile
 			r.Get("/me", handlers.GetMeHandler)
 			r.Put("/me", handlers.UpdateUserHandler)
 

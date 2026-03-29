@@ -37,6 +37,11 @@ type UpdateProfileInput struct {
 	Bio      string `json:"bio"`
 }
 
+type UpdatePasswordInput struct {
+	Password    string `json:"password"`
+	NewPassword string `json:"new_password"`
+}
+
 type RegisterInput struct {
 	Name       string `json:"name"`
 	Email      string `json:"email"`

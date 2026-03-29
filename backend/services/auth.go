@@ -88,3 +88,31 @@ func LoginUser(ctx context.Context, loginInput models.LoginInput) (string, error
 
 	return jwtToken, nil
 }
+
+func UpdatePassword(ctx context.Context, uid string, passwordInput models.UpdatePasswordInput) error {
+	// get password hash
+	hash, err := repository.GetPasswordHash(ctx, uid)
+	if err != nil {
+		return err
+	}
+
+	// compare hash and password
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(passwordInput.Password))
+	if err != nil {
+		return fmt.Errorf("incorrect password")
+	}
+
+	// hash new password
+	newHash, err := bcrypt.GenerateFromPassword([]byte(passwordInput.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// Update password
+	err = repository.UpdatePassword(ctx, uid, string(newHash))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

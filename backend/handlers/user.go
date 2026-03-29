@@ -78,6 +78,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 			utils.SendError(w, "User inactive", http.StatusForbidden)
 			return
 		}
+		utils.LogError("UpdateUser service", err)
 		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}

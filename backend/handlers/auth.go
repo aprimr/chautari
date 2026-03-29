@@ -95,3 +95,52 @@ func UserLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	utils.SendSuccess(w, "User logged in successfully", jwtToken, http.StatusOK)
 }
+
+func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	// get uid from r.context
+	uid, ok := r.Context().Value("uid").(string)
+	if !ok || uid == "" {
+		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse JSON
+	passwordInput := models.UpdatePasswordInput{}
+	err := json.NewDecoder(r.Body).Decode(&passwordInput)
+	if err != nil {
+		utils.SendError(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Validate password
+	if msg, valid := validation.IsValidPassword(passwordInput.NewPassword); !valid {
+		utils.SendError(w, msg, http.StatusBadRequest)
+		return
+	}
+	if passwordInput.Password == passwordInput.NewPassword {
+		utils.SendError(w, "New password must be different", http.StatusConflict)
+		return
+	}
+
+	// Call service
+	err = services.UpdatePassword(r.Context(), uid, passwordInput)
+	if err != nil {
+		if err.Error() == "incorrect password" {
+			utils.SendError(w, "Incorrect password", http.StatusUnauthorized)
+			return
+		}
+		if err.Error() == "user not found" {
+			utils.SendError(w, "User not found", http.StatusNotFound)
+			return
+		}
+		if err.Error() == "error updating password" {
+			utils.SendError(w, "Error updating password", http.StatusInternalServerError)
+			return
+		}
+		utils.LogError("UpdatePassword service", err)
+		utils.SendError(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendSuccess(w, "Password updated successfully", nil, http.StatusOK)
+}

@@ -16,6 +16,38 @@ func CreateUser(ctx context.Context, registerInput models.RegisterInput, usernam
 	return err
 }
 
+func GetPasswordHash(ctx context.Context, uid string) (string, error) {
+	query := "SELECT password FROM users WHERE uid=$1 AND is_deleted=FALSE"
+
+	// fire query and scan row
+	var hash string
+	row := db.Pool.QueryRow(ctx, query, uid)
+	err := row.Scan(&hash)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", fmt.Errorf("user not found")
+		}
+		return "", err
+	}
+	return hash, nil
+}
+
+func UpdatePassword(ctx context.Context, uid, hash string) error {
+	query := "UPDATE users SET password=$1, updated_at=$2 WHERE uid=$3 AND is_active=TRUE"
+
+	// Fire query
+	cmdTag, err := db.Pool.Exec(ctx, query, hash, time.Now(), uid)
+	if err != nil {
+		return err
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("error updating password")
+	}
+
+	return nil
+}
+
 func GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	query := "SELECT uid, name, username, email, password, bio, profile_url, is_online, last_seen, is_active, is_deleted, created_at, updated_at FROM users WHERE email=$1"
 	row := db.Pool.QueryRow(ctx, query, email)
