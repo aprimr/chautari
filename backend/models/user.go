@@ -31,6 +31,12 @@ type UserInfo struct {
 	LastSeen   time.Time `json:"last_seen"`
 }
 
+type UpdateProfileInput struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Bio      string `json:"bio"`
+}
+
 type RegisterInput struct {
 	Name       string `json:"name"`
 	Email      string `json:"email"`

@@ -161,3 +161,30 @@ func SearchUser(ctx context.Context, searchText string, uid string) ([]models.Us
 
 	return users, nil
 }
+
+func UpdateUser(ctx context.Context, uid string, updateData models.UpdateProfileInput) (models.UserInfo, error) {
+	query := "UPDATE users SET name=$1, username=$2, bio=$3, updated_at=$4 WHERE uid=$5 AND is_active=TRUE RETURNING uid, name, username, email, bio, profile_url, is_online, last_seen"
+
+	// Fire query and scan
+	updatedUser := models.UserInfo{}
+	row := db.Pool.QueryRow(ctx, query, updateData.Name, updateData.Username, updateData.Bio, time.Now(), uid)
+	err := row.Scan(
+		&updatedUser.Uid,
+		&updatedUser.Name,
+		&updatedUser.Username,
+		&updatedUser.Email,
+		&updatedUser.Bio,
+		&updatedUser.ProfileUrl,
+		&updatedUser.IsOnline,
+		&updatedUser.LastSeen,
+	)
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return models.UserInfo{}, fmt.Errorf("user not found or inactive")
+		}
+		return models.UserInfo{}, err
+	}
+
+	return updatedUser, nil
+}

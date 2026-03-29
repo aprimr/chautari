@@ -39,6 +39,7 @@ func main() {
 			r.Use(middlewares.Authentication)
 
 			r.Get("/me", handlers.GetMeHandler)
+			r.Put("/me", handlers.UpdateUserHandler)
 
 			// Search User
 			r.Get("/search", handlers.SearchUserHandler)

@@ -42,6 +42,34 @@ func GetMe(ctx context.Context, uid string) (*models.User, error) {
 	return user, err
 }
 
+func UpdateUser(ctx context.Context, uid string, updateInput models.UpdateProfileInput) (models.UserInfo, error) {
+	// Get user details
+	userData, err := repository.GetUserByUid(ctx, uid)
+	if err != nil {
+		return models.UserInfo{}, err
+	}
+
+	// Check if we need to update username
+	// if not skip username check
+	if userData.Username != updateInput.Username {
+		taken, err := repository.UsernameAlreadyTaken(ctx, updateInput.Username)
+		if err != nil {
+			return models.UserInfo{}, err
+		}
+		if taken {
+			return models.UserInfo{}, fmt.Errorf("username already taken")
+		}
+	}
+
+	// Update user
+	updatedData, err := repository.UpdateUser(ctx, uid, updateInput)
+	if err != nil {
+		return models.UserInfo{}, err
+	}
+
+	return updatedData, nil
+}
+
 func SearchUser(ctx context.Context, searchText string, uid string) ([]models.UserInfo, error) {
 	users, err := repository.SearchUser(ctx, searchText, uid)
 	if err != nil {
